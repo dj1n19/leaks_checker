@@ -42,11 +42,11 @@ static vector *v_add(vector *v, void *p) {
 }
 
 static vector *v_remove(vector *v, void *p) {
-    int i = 0;
+    size_t i = 0;
 
-    for (int j = 0; j < v->size && v->ptr[j] != p; ++j)
+    for (size_t j = 0; j < v->size && v->ptr[j] != p; ++j)
         i++;
-    for (int j = i; j + 1 < v->size; ++j)
+    for (size_t j = i; j + 1 < v->size; ++j)
         v->ptr[j] = v->ptr[j + 1];
     v->size--;
     return (v);
@@ -54,15 +54,15 @@ static vector *v_remove(vector *v, void *p) {
 
 static vector *v_clear(vector *v) {
     void *(*libc_free)(void *ptr) = (void *(*)(void *)) dlsym(RTLD_NEXT, "free");
-    for (int i = 0; i < v->size; ++i)
+    for (size_t i = 0; i < v->size; ++i)
         libc_free(v->ptr[i]);
     v->size = 0;
     return (v);
 }
 
 static void v_puts(vector *v) {
-    for (int i = 0; i < v->size; ++i)
-        dprintf(2, "%d: [%p]\n", i, v->ptr[i]);
+    for (size_t i = 0; i < v->size; ++i)
+        dprintf(2, "%lu: [%p]\n", i, v->ptr[i]);
 }
 
 void *malloc(size_t size) {

@@ -12,7 +12,7 @@
 
 #include "leaks.h"
 
-static vector *v_malloc;
+static vector	v_malloc;
 
 static vector *v_resize(vector *v, size_t new_size) {
     void **new;
@@ -60,31 +60,9 @@ static vector *v_clear(vector *v) {
     return (v);
 }
 
-static void v_destroy(vector *v) {
-    void *(*libc_free)(void *ptr) = (void *(*)(void *)) dlsym(RTLD_NEXT, "free");
-    if (!v)
-        return ;
-    if (v->size > 0)
-        v = v_clear(v);
-    libc_free(v);
-}
-
 static void v_puts(vector *v) {
     for (int i = 0; i < v->size; ++i)
         dprintf(2, "%d: [%p]\n", i, v->ptr[i]);
-}
-
-static vector *v_new(size_t size) {
-    vector *v;
-
-    void *(*libc_malloc)(size_t size) = (void *(*)(size_t)) dlsym(RTLD_NEXT, "malloc");
-    v = (vector *) libc_malloc(sizeof(vector));
-    if (!v)
-        return (NULL);
-    v->ptr = NULL;
-    v->size = 0;
-    v->max_size = 0;
-    return (v);
 }
 
 void *malloc(size_t size) {
@@ -93,30 +71,26 @@ void *malloc(size_t size) {
     void *p = libc_malloc(size);
     if (!p)
         return (NULL);
-    v_add(v_malloc, p);
+    v_add(&v_malloc, p);
     return (p);
 }
 
 void free(void *ptr) {
     void *(*libc_free)(void *ptr) = (void *(*)(void *)) dlsym(RTLD_NEXT, "free");
 	if (ptr)
-    	v_remove(v_malloc, ptr);
+    	v_remove(&v_malloc, ptr);
     libc_free(ptr);
 }
 
-void init_leaks(void) {
-    v_malloc = v_new(1);
-}
-
 void check_leaks(void) {
-    if (v_malloc->size != 0)
+    if (v_malloc.size != 0)
     {
         dprintf(2, "\e[31mLEAKS!\n\e[0m");
         dprintf(2, "\e[31m");
-        v_puts(v_malloc);
+        v_puts(&v_malloc);
         dprintf(2, "\e[0m");
     }
     else
         dprintf(2, "\e[32mNO LEAKS :D\n\e[0m");
-    v_destroy(v_malloc);
+	v_clear(&v_malloc);
 }

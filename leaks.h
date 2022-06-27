@@ -26,6 +26,5 @@ typedef struct vector
 void    *malloc(size_t size);
 void    free(void *ptr);
 void    check_leaks(void);
-void    init_leaks(void);
 
 #endif

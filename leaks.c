@@ -6,7 +6,7 @@
 /*   By: bgenie <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 15:58:02 by bgenie            #+#    #+#             */
-/*   Updated: 2022/06/23 13:53:20 by bgenie           ###   ########.fr       */
+/*   Updated: 2022/07/20 15:31:25 by bgenie           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static vector *v_resize(vector *v, size_t new_size) {
         exit(EXIT_FAILURE);
     }
     v->ptr = new;
-    v->max_size = new_size;
+    v->max_size = 0;
     return (v);
 }
 

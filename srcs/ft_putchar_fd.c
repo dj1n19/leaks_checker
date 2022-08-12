@@ -1,30 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   leaks.h                                            :+:      :+:    :+:   */
+/*   ft_putchar_fd.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bgenie <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/06/22 16:21:01 by bgenie            #+#    #+#             */
-/*   Updated: 2022/06/22 16:21:02 by bgenie           ###   ########.fr       */
+/*   Created: 2022/04/05 11:20:29 by bgenie            #+#    #+#             */
+/*   Updated: 2022/04/12 13:56:39 by bgenie           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LEAKS_H
-# define LEAKS_H
-# include <dlfcn.h>
-# include <stdlib.h>
-# include <stdio.h>
+#include "../includes/leaks.h"
 
-typedef struct vector
+void	ft_putchar_fd(char c, int fd)
 {
-    void      **ptr;
-    size_t    size;
-    size_t    max_size;
-} vector;
-
-void    *malloc(size_t size);
-void    free(void *ptr);
-void    check_leaks(void);
-
-#endif
+	if (fd < 0)
+		return ;
+	write(fd, &c, 1);
+}

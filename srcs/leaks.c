@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "leaks.h"
+#include "../includes/leaks.h"
 
 static vector	v_malloc;
 
@@ -33,11 +33,14 @@ static vector *v_resize(vector *v, size_t new_size) {
     return (v);
 }
 
-static vector *v_add(vector *v, void *p) {
+static vector *v_add(vector *v, void *p, int line, const char *function, char *file) {
     if (v->size >= v->max_size)
         v = v_resize(v, v->max_size + 1);
     v->ptr[v->size] = p;
     v->size++;
+    v->line = line;
+    v->file = file;
+    v->function = function;
     return (v);
 }
 
@@ -61,17 +64,21 @@ static vector *v_clear(vector *v) {
 }
 
 static void v_puts(vector *v) {
+    ft_printf("\e[33m\t===== LEAKS CHECKER =====\e[0m\n");
     for (size_t i = 0; i < v->size; ++i)
-        dprintf(2, "%lu: [%p]\n", i, v->ptr[i]);
+    {
+        ft_printf("\e[31m[%p]: <%s> in \"%s\":%d\e[0m\n", v->ptr[i], v->function, v->file, v->line);
+    }
+    ft_printf("\e[33m\t===== %d LEAKS FOUND ! =====\e[0m\n", v->size);
 }
 
-void *malloc(size_t size) {
+void *ft_malloc(size_t size, int line, const char *function, char *file) {
 
     void *(*libc_malloc)(size_t size) = (void *(*)(size_t)) dlsym(RTLD_NEXT, "malloc");
     void *p = libc_malloc(size);
     if (!p)
         return (NULL);
-    v_add(&v_malloc, p);
+    v_add(&v_malloc, p, line, function, file);
     return (p);
 }
 
@@ -85,12 +92,11 @@ void free(void *ptr) {
 void check_leaks(void) {
     if (v_malloc.size != 0)
     {
-        dprintf(2, "\e[31mLEAKS!\n\e[0m");
-        dprintf(2, "\e[31m");
         v_puts(&v_malloc);
-        dprintf(2, "\e[0m");
     }
     else
-        dprintf(2, "\e[32mNO LEAKS :D\n\e[0m");
-	v_clear(&v_malloc);
+    {
+        ft_printf("\e[32m\t===== NO LEAKS =====\n\e[0m");
+    }
+    v_clear(&v_malloc);
 }

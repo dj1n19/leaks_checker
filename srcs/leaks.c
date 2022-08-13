@@ -6,7 +6,7 @@
 /*   By: bgenie <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 15:58:02 by bgenie            #+#    #+#             */
-/*   Updated: 2022/08/04 17:30:03 by bgenie           ###   ########.fr       */
+/*   Updated: 2022/08/13 16:41:49 by bgenie           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,13 @@ static vector *v_remove(vector *v, void *p) {
     for (size_t j = 0; j < v->size && v->ptr[j] != p; ++j)
         i++;
     for (size_t j = i; j + 1 < v->size; ++j)
+	{
         v->ptr[j] = v->ptr[j + 1];
-    v->size--;
+        v->line[j] = v->line[j + 1];
+        v->function[j] = v->function[j + 1];
+        v->file[j] = v->file[j + 1];
+	}
+	v->size--;
     return (v);
 }
 

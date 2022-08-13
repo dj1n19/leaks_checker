@@ -21,15 +21,15 @@
 
 typedef struct vector
 {
-    void    **ptr;
-    size_t  size;
-    size_t  max_size;
-    int     line;
-    char    *file;
-    const char    *function;
+    void        **ptr;
+    size_t      size;
+    size_t      max_size;
+    int         *line;
+    char        **file;
+    char  **function;
 } vector;
 
-void    *ft_malloc(size_t size, int line, const char *function, char *file);
+void    *ft_malloc(size_t size, int line, char *function, char *file);
 void    free(void *ptr);
 void    check_leaks(void);
 
@@ -49,5 +49,5 @@ char    *ft_itoa(int n);
 char    *ft_utoa(unsigned int n);
 void    ft_putchar_fd(char c, int fd);
 
-# define malloc(size) ft_malloc(size, __LINE__, strdup(__FUNCTION__), strdup(__FILE__))
+# define malloc(size) ft_malloc(size, (int)__LINE__, (char *)strdup(__FUNCTION__), (char *)strdup(__FILE__))
 #endif

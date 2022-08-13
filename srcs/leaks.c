@@ -15,32 +15,32 @@
 static vector	v_malloc;
 
 static vector *v_resize(vector *v, size_t new_size) {
-    void **new;
-
     if (new_size < v->size)
     {
         dprintf(2, "\e[31mLEAKS.ERROR: new size smaller than current size\n\e[0m\n");
         exit(EXIT_FAILURE);
     }
-    new = (void **) realloc(v->ptr, sizeof(void *) * new_size);
-    if (!new)
+    v->ptr = (void **) realloc(v->ptr, sizeof(void *) * new_size);
+    v->line = (int *) realloc(v->line, sizeof(int) * new_size);
+    v->file = (char **) realloc(v->file, sizeof(char *) * new_size);
+    v->function = (char **) realloc(v->function, sizeof(char *) * new_size); 
+    if (!v->ptr || !v->line || !v->file || !v->function)
     {
         dprintf(2, "\e[31mLEAKS.ERROR: realloc failed\e[0m\n");
         exit(EXIT_FAILURE);
     }
-    v->ptr = new;
     v->max_size = new_size;
     return (v);
 }
 
-static vector *v_add(vector *v, void *p, int line, const char *function, char *file) {
+static vector *v_add(vector *v, void *p, int line, char *function, char *file) {
     if (v->size >= v->max_size)
         v = v_resize(v, v->max_size + 1);
     v->ptr[v->size] = p;
+    v->line[v->size] = line;
+    v->file[v->size] = file;
+    v->function[v->size] = function;
     v->size++;
-    v->line = line;
-    v->file = file;
-    v->function = function;
     return (v);
 }
 
@@ -67,12 +67,12 @@ static void v_puts(vector *v) {
     ft_printf("\e[33m\t===== LEAKS CHECKER =====\e[0m\n");
     for (size_t i = 0; i < v->size; ++i)
     {
-        ft_printf("\e[31m[%p]: <%s> in \"%s\":%d\e[0m\n", v->ptr[i], v->function, v->file, v->line);
+        ft_printf("\e[31m[%p]: <%s> in \"%s\":%d\e[0m\n", v->ptr[i], v->function[i], v->file[i], v->line[i]);
     }
     ft_printf("\e[33m\t===== %d LEAKS FOUND ! =====\e[0m\n", v->size);
 }
 
-void *ft_malloc(size_t size, int line, const char *function, char *file) {
+void *ft_malloc(size_t size, int line, char *function, char *file) {
 
     void *(*libc_malloc)(size_t size) = (void *(*)(size_t)) dlsym(RTLD_NEXT, "malloc");
     void *p = libc_malloc(size);

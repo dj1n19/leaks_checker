@@ -2,24 +2,9 @@ CC = gcc
 
 CFLAGS = -Wall -Wextra -Werror
 
-SRCS =	srcs/ft_parse_format.c \
-		srcs/ft_printchar.c \
-		srcs/ft_printdec.c \
-		srcs/ft_printf.c \
-		srcs/ft_printptr.c \
-		srcs/ft_printstr.c \
-		srcs/ft_utohex.c \
-		srcs/ft_printudec.c \
-		srcs/ft_printhex.c \
-		srcs/ft_itoa.c \
-		srcs/ft_putchar_fd.c \
-		srcs/ft_putstr_fd.c \
-		srcs/ft_strlen.c \
-		srcs/ft_toupper.c \
-		srcs/ft_utoa.c \
-		srcs/leaks.c
+SRCS =	leaks.c
 
-HEADERS_DIR = includes/
+HEADERS_DIR = ./
 
 OBJS = $(SRCS:.c=.o)
 

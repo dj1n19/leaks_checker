@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   leaks.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bgenie <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: bgenie <bgenie@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 15:58:02 by bgenie            #+#    #+#             */
-/*   Updated: 2022/08/13 16:41:49 by bgenie           ###   ########.fr       */
+/*   Updated: 2022/10/30 16:11:31 by bgenie           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/leaks.h"
+#include "leaks.h"
 
 static vector	v_malloc;
 
@@ -69,12 +69,12 @@ static vector *v_clear(vector *v) {
 }
 
 static void v_puts(vector *v) {
-    ft_printf("\e[33m\t===== LEAKS CHECKER =====\e[0m\n");
+    printf("\e[33m\t===== LEAKS CHECKER =====\e[0m\n");
     for (size_t i = 0; i < v->size; ++i)
     {
-        ft_printf("\e[31m[%p]: <%s> in \"%s\":%d\e[0m\n", v->ptr[i], v->function[i], v->file[i], v->line[i]);
+        printf("\e[31m[%p]: <%s> in \"%s\":%d\e[0m\n", v->ptr[i], v->function[i], v->file[i], v->line[i]);
     }
-    ft_printf("\e[33m\t===== %d LEAKS FOUND ! =====\e[0m\n", v->size);
+    printf("\e[33m\t===== %zu LEAKS FOUND ! =====\e[0m\n", v->size);
 }
 
 void *ft_malloc(size_t size, int line, char *function, char *file) {
@@ -101,7 +101,7 @@ void check_leaks(void) {
     }
     else
     {
-        ft_printf("\e[32m\t===== NO LEAKS =====\n\e[0m");
+        printf("\e[32m\t===== NO LEAKS =====\n\e[0m");
     }
     v_clear(&v_malloc);
 }

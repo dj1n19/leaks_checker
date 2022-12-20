@@ -14,7 +14,7 @@ NAME = libleaks.a
 				@printf "\e[34mCompiling file %s...\e[0m\n" $<
 				@$(CC) $(CFLAGS) -c -I$(HEADERS_DIR) $< -o $(<:.c=.o)
 
-all:		$(NAME)			
+all:		$(NAME)
 
 $(NAME):	$(OBJS)
 				@printf "\e[34mCreating library %s...\e[0m\n" ${NAME}

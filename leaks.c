@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   leaks.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dj1n <dj1n@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: bgenie <bgenie@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 15:58:02 by bgenie            #+#    #+#             */
-/*   Updated: 2022/12/20 22:31:49 by dj1n             ###   ########.fr       */
+/*   Updated: 2023/03/30 21:00:15 by bgenie           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,8 @@ void	init(void)
 	}
 }
 
-__attribute__((destructor))
-void	destroy(void)
+// __attribute__((destructor))
+static void	destroy(void)
 {
 	void *(*libc_free)(void *ptr) = (void *(*)(void *)) dlsym(RTLD_NEXT, "free");
 	libc_free(v_malloc->ptr);
@@ -50,7 +50,8 @@ void	destroy(void)
 	libc_free(v_malloc);
 }
 
-static vector *v_resize(vector *v, size_t new_size) {
+static vector *v_resize(vector *v, size_t new_size)
+{
     if (new_size < v->size)
     {
         dprintf(2, "\e[31mLEAKS.ERROR: new size smaller than current size\n\e[0m\n");
@@ -70,7 +71,8 @@ static vector *v_resize(vector *v, size_t new_size) {
     return (v);
 }
 
-static vector *v_add(vector *v, void *p, int line, char *function, char *file, size_t msize) {
+static vector *v_add(vector *v, void *p, int line, char *function, char *file, size_t msize)
+{
     if (v->size >= v->max_size)
         v = v_resize(v, v->max_size + 1);
     v->ptr[v->size] = p;
@@ -82,7 +84,8 @@ static vector *v_add(vector *v, void *p, int line, char *function, char *file, s
     return (v);
 }
 
-static vector *v_remove(vector *v, void *p) {
+static vector *v_remove(vector *v, void *p)
+{
     size_t i = 0;
 
     for (size_t j = 0; j < v->size && v->ptr[j] != p; ++j)
@@ -99,21 +102,24 @@ static vector *v_remove(vector *v, void *p) {
     return (v);
 }
 
-static vector *v_clear(vector *v) {
+static vector *v_clear(vector *v)
+{
     for (size_t i = 0; i < v->size; ++i)
         ft_free(v->ptr[i]);
     v->size = 0;
     return (v);
 }
 
-static void v_puts(vector *v) {
+static void v_puts(vector *v)
+{
     printf("\e[33m\t===== LEAKS CHECKER =====\e[0m\n");
     for (size_t i = 0; i < v->size; ++i)
         printf("\e[31m[%p]: <%s> in \"%s\":%d (%lu bytes) \e[0m\n", v->ptr[i], v->function[i], v->file[i], v->line[i], v->msize[i]);
     printf("\e[33m\t===== %zu LEAKS FOUND ! =====\e[0m\n", v->size);
 }
 
-void *ft_malloc(size_t size, int line, char *function, char *file) {
+void *ft_malloc(size_t size, int line, char *function, char *file)
+{
     void *(*libc_malloc)(size_t size) = (void *(*)(size_t)) dlsym(RTLD_NEXT, "malloc");
     void *p = libc_malloc(size);
     if (!p)
@@ -122,14 +128,16 @@ void *ft_malloc(size_t size, int line, char *function, char *file) {
     return (p);
 }
 
-void ft_free(void *ptr) {
+void ft_free(void *ptr)
+{
     void *(*libc_free)(void *ptr) = (void *(*)(void *)) dlsym(RTLD_NEXT, "free");
 	if (ptr)
     	v_remove(v_malloc, ptr);
     libc_free(ptr);
 }
 
-void check_leaks(void) {
+void check_leaks(void)
+{
     if (v_malloc->size != 0)
     {
         v_puts(v_malloc);
@@ -139,4 +147,5 @@ void check_leaks(void) {
         printf("\e[32m\t===== NO LEAKS =====\n\e[0m");
     }
     v_clear(v_malloc);
+    destroy();
 }
